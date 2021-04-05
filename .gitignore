@@ -101,3 +101,6 @@ ENV/
 
 *.idea
 .DS_Store
+
+# data
+/data/

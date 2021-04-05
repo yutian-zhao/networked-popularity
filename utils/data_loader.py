@@ -1,5 +1,6 @@
 import json
 import numpy as np
+import os
 
 
 class DataLoader:
@@ -18,11 +19,14 @@ class DataLoader:
         self.embed_uploadtime_dict = None
         self.embed_genre_dict = None
 
+        self.cwd = None
+
     def load_video_views(self):
+        self.cwd = os.getcwd()
         self.vid_embed_dict = {}
         self.embed_view_dict = {}
         self.embed_avg_view_dict = {}
-        with open('../data/vevo_forecast_data_60k.tsv', 'r') as fin:
+        with open('data/vevo_forecast_data_60k.tsv', 'r') as fin:
             for line in fin:
                 embed, vid, ts_view, total_view = line.rstrip().split('\t')
                 embed = int(embed)
@@ -39,10 +43,12 @@ class DataLoader:
             self.load_embed_content_dict()
         else:
             self.embed_cid_dict = {}
+            self.embed_ctitle_dict = {}
             self.embed_title_dict = {}
             self.embed_uploadtime_dict = {}
             self.embed_genre_dict = {}
-            with open('../data/vevo_en_videos_60k.json', 'r') as fin:
+            
+            with open('data/vevo_en_videos_60k.json', 'r') as fin:  # ../
                 for line in fin:
                     video_json = json.loads(line.rstrip())
                     vid = video_json['id']
@@ -50,6 +56,9 @@ class DataLoader:
 
                     cid = video_json['snippet']['channelId']
                     self.embed_cid_dict[embed] = cid
+
+                    ctitle = video_json['snippet']['channelTitle']
+                    self.embed_ctitle_dict[embed] = ctitle
 
                     title = video_json['snippet']['title']
                     self.embed_title_dict[embed] = title
