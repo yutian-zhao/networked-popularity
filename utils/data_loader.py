@@ -1,11 +1,12 @@
 import json
 import numpy as np
 import os
-
+from collections import defaultdict
 
 class DataLoader:
     TARGET_LISTS = ['Pop_music', 'Rock_music', 'Hip_hop_music', 'Independent_music',
                     'Country_music', 'Electronic_music', 'Soul_music', 'Others']
+    EXCLUDE_LISTS = ["Music"]
 
     def __init__(self):
         self.vevo_en_vid_list = None
@@ -47,6 +48,7 @@ class DataLoader:
             self.embed_title_dict = {}
             self.embed_uploadtime_dict = {}
             self.embed_genre_dict = {}
+            self.embed_all_genre_dict = defaultdict(list)
             
             with open('data/vevo_en_videos_60k.json', 'r') as fin:  # ../
                 for line in fin:
@@ -68,6 +70,8 @@ class DataLoader:
 
                     if 'topics' in video_json:
                         topics = [x for x in video_json['topics'] if x in self.TARGET_LISTS]
+                        all_topics =  [x for x in video_json['topics'] if x not in self.EXCLUDE_LISTS]
                     else:
                         topics = []
                     self.embed_genre_dict[embed] = topics
+                    self.embed_all_genre_dict[embed] = all_topics
