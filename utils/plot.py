@@ -1,6 +1,6 @@
 import numpy as np
 from collections.abc import Iterable
-
+import matplotlib.pyplot as plt
 
 class ColorPalette:
     # cornflower_blue
@@ -71,9 +71,9 @@ def stackedBarPlot(ax,  # axes to plot onto
         showFirst = np.min([showFirst, np.shape(data)[0]])
         data_copy = np.copy(data[:showFirst]).transpose().astype('float')
         data_shape = np.shape(data_copy)
-        if heights is not None:
+        if heights != None:
             heights = heights[:showFirst]
-        if widths is not None:
+        if widths != None:
             widths = widths[:showFirst]
         showFirst = -1
     else:
@@ -100,10 +100,10 @@ def stackedBarPlot(ax,  # axes to plot onto
     if scale:
         data_copy /= data_stack[levels - 1]
         data_stack /= data_stack[levels - 1]
-        if heights is not None:
+        if heights != None:
             print("WARNING: setting scale and heights does not make sense.")
             heights = None
-    elif heights is not None:
+    elif heights != None:
         data_copy /= data_stack[levels - 1]
         data_stack /= data_stack[levels - 1]
         for i in np.arange(num_bars):
@@ -113,7 +113,7 @@ def stackedBarPlot(ax,  # axes to plot onto
     # ------------------------------------------------------------------------------
     # ticks
 
-    if yTicks is not "none":
+    if yTicks != "none":
         # it is either a set of ticks or the number of auto ticks to make
         real_ticks = True
         try:
@@ -165,7 +165,7 @@ def stackedBarPlot(ax,  # axes to plot onto
                )
 
     # make ticks if necessary
-    if yTicks is not "none":
+    if yTicks != "none":
         ax.tick_params(axis='y', which='both', direction="out", labelsize=10)
         ax.yaxis.tick_left()
         # ax.yticks(yTicks[0], yTicks[1])
@@ -188,3 +188,52 @@ def stackedBarPlot(ax,  # axes to plot onto
         ax.set_xlabel(xlabel, fontsize=11)
     if ylabel != '':
         ax.set_ylabel(ylabel, fontsize=11)
+
+## scatter plot with a mean point plotted for each x value
+def mean_scatter(x, y, c1='grey', c2='blue'):
+    plt.scatter(x, y, s=2, color=c1, marker='o', alpha=0.5)
+    data = np.zeros((len(x), 2))
+    data[:, 0] = x
+    data[:, 1] = y
+    data = data[data[:, 0].argsort()]
+    data_split = np.split(data[:,1], np.unique(data[:, 0], return_index=True)[1][1:])
+    y_mean = [np.mean(i) for i in data_split]
+    plt.scatter(np.sort(np.unique(data[:, 0])), y_mean, s=2, color=c2, marker='o', alpha=1)
+
+## scatter plot with a average line plotted
+def mean_plot(x, y, c1='grey', c2='blue'):
+    plt.scatter(x, y, s=2, color=c1, marker='o', alpha=0.5)
+    data = np.zeros((len(x), 2))
+    data[:, 0] = x
+    data[:, 1] = y
+    data = data[data[:, 0].argsort()]
+    data_split = np.split(data[:,1], np.unique(data[:, 0], return_index=True)[1][1:])
+    y_mean = [np.mean(i) for i in data_split]
+    plt.plot(np.sort(np.unique(data[:, 0])), y_mean, color=c2)
+
+## Cumulative percentage of views vs (inverse) view percentile
+def plot_cumulative(avg_view_list):
+    avg_view_sort_ind = np.argsort(avg_view_list)
+    sorted_avg_view_list = avg_view_list[avg_view_sort_ind]
+    # sorted_ids = np.arange(num_videos)[avg_view_sort_ind]
+    total_views = np.sum(avg_view_list)
+
+
+    # calculate head_mid and mid_tail points in the long tail model
+    # N_50 = num_videos - np.argmin(np.abs([(100*np.sum(sorted_avg_view_list[i:])/total_views-50) for i in range(num_videos)]))
+    # head_mid = math.floor(np.power(N_50, 2/3))
+    # mid_tail = math.ceil(np.power(N_50, 4/3))
+    # head_mid_pho = np.power(N_50, 2/3)/num_videos
+    # mid_tail_pho = np.power(N_50, 4/3)/num_videos
+    # print("head_mid_pho, N_50/num_videos, mid_tail_pho: ", head_mid_pho, N_50/num_videos, mid_tail_pho)
+    # print("N_50, head_mid, mid_tail: ", N_50, head_mid, mid_tail)
+    # head_ids = sorted_ids[-head_mid:]
+    # mid_ids = sorted_ids[mid_tail+1:head_mid]
+    # tail_ids = sorted_ids[:mid_tail]
+
+    percentiles = np.arange(1000)/10
+    percentages = np.array([100*np.sum(avg_view_list[avg_view_list>=np.percentile(avg_view_list, 100-p)])/total_views for p in percentiles])
+    # print("gini: ", gini(avg_view_list))
+    
+#     plt.vlines([head_mid_pho, N_50/num_videos, mid_tail_pho], 0, 100, linestyle='dashed')
+    plt.plot(percentiles, percentages)

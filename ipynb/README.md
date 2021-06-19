@@ -1,1 +1,1 @@
-This folder contains history draft Jupyter notebooks which used to analyse data. 
+This folder contains history draft Jupyter notebooks which are used to analyse data. Move to the root directory of the project to run.
