@@ -16,7 +16,7 @@ Extract `network_pickle_{0}.pkl` from `network_pickle.tar.bz2` to 'data/network_
 
 Extract `vevo_en_videos_60k.json` from `vevo_en_videos_60k.tar.bz2` to 'data/' folder.
 
-We provide two versions of code to generate plots.
+We provide two versions of code to generate plots. Plots are saved in [plots](/plots/) folder.
 1. [generate_plots.py](/generate_plots.py)
 2. [generate_plots.ipynb](/generate_plots.ipynb)
 
